@@ -18,9 +18,9 @@ export default function Contact() {
           <span className="text-sm tracking-[0.25em] uppercase text-fuchsia-400">
             Cùng làm việc nhé
           </span>
-          <h2 className="mt-6 text-5xl md:text-8xl font-semibold tracking-tight leading-[0.95]">
-            Hãy tạo ra <br />
-            <span className="gradient-text animate-shimmer">điều tuyệt vời.</span>
+          <h2 className="mt-6 text-4xl md:text-7xl font-semibold tracking-tight leading-[1.05] py-[0.08em]">
+            Great products start <br />
+            <span className="gradient-text animate-shimmer">with a conversation.</span>
           </h2>
         </Reveal>
 

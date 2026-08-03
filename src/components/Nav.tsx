@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import Logo from './Logo'
 
 const links = [
   { id: 'about', label: 'Giới thiệu' },
@@ -28,8 +29,8 @@ export default function Nav() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-        <a href="#top" className="font-semibold tracking-tight text-lg">
-          ĐNH<span className="text-fuchsia-400">.</span>
+        <a href="#top" className="hover:scale-105 transition-transform duration-300">
+          <Logo withText className="w-9 h-9" />
         </a>
         <div className="hidden md:flex items-center gap-8 text-sm text-haze">
           {links.map((l) => (

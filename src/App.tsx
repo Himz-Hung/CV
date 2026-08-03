@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import Nav from './components/Nav'
 import ScrollProgress from './components/ScrollProgress'
+import Preloader from './components/Preloader'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
 import About from './components/About'
@@ -10,8 +13,22 @@ import Contact from './components/Contact'
 import { profile } from './data'
 
 export default function App() {
+  const [loading, setLoading] = useState(true)
+
+  // lock scroll while the preloader is visible
+  useEffect(() => {
+    document.body.style.overflow = loading ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [loading])
+
   return (
     <>
+      <AnimatePresence>
+        {loading && <Preloader onDone={() => setLoading(false)} />}
+      </AnimatePresence>
+
       <ScrollProgress />
       <Nav />
       <main>
