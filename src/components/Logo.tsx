@@ -6,14 +6,18 @@ type Props = {
   textClassName?: string
 }
 
+const H_PATH = 'M10 8 H17 V20 H31 V8 H38 V40 H31 V27 H17 V40 H10 Z'
+// horizontal stripe positions inside the H
+const STRIPES = [6, 12, 18, 24, 30, 36, 42]
+
 /**
- * "Himz" monogram — a squircle glass badge with a geometric H
- * filled by the brand gradient (indigo → fuchsia → orange).
+ * "Himz" monogram — an italic (slanted) letter H filled with gradient
+ * stripes, sharp corners (no rounding).
  */
 export default function Logo({ className, withText = false, textClassName }: Props) {
   const id = useId()
   const grad = `himz-grad-${id}`
-  const glow = `himz-glow-${id}`
+  const clip = `himz-clip-${id}`
 
   return (
     <span className="inline-flex items-center gap-2.5 select-none">
@@ -31,40 +35,23 @@ export default function Logo({ className, withText = false, textClassName }: Pro
             <stop offset="0.5" stopColor="#e879f9" />
             <stop offset="1" stopColor="#fdba74" />
           </linearGradient>
-          <filter id={glow} x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur stdDeviation="1.4" result="b" />
-            <feMerge>
-              <feMergeNode in="b" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
+          <clipPath id={clip}>
+            <path d={H_PATH} />
+          </clipPath>
         </defs>
 
-        {/* squircle badge */}
-        <rect
-          x="1.25"
-          y="1.25"
-          width="45.5"
-          height="45.5"
-          rx="13.5"
-          fill="rgba(255,255,255,0.045)"
-          stroke={`url(#${grad})`}
-          strokeWidth="1.5"
-        />
-
-        {/* geometric H */}
-        <g fill={`url(#${grad})`} filter={`url(#${glow})`}>
-          <rect x="14" y="13" width="5" height="22" rx="2.5" />
-          <rect x="29" y="13" width="5" height="22" rx="2.5" />
-          <rect x="15.5" y="21.5" width="17" height="5" rx="2.5" />
+        {/* slanted (italic) H, revealed through stripes */}
+        <g transform="translate(6 0) skewX(-12)">
+          <g clipPath={`url(#${clip})`}>
+            {STRIPES.map((y) => (
+              <rect key={y} x="6" y={y} width="36" height="3.6" fill={`url(#${grad})`} />
+            ))}
+          </g>
         </g>
-
-        {/* accent dot */}
-        <circle cx="37.5" cy="11" r="2.1" fill="#fdba74" />
       </svg>
 
       {withText && (
-        <span className={textClassName ?? 'font-semibold tracking-tight text-lg'}>
+        <span className={`italic ${textClassName ?? 'font-semibold tracking-tight text-lg'}`}>
           Himz<span className="text-fuchsia-400">.</span>
         </span>
       )}
