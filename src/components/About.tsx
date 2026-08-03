@@ -1,7 +1,19 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { profile, stats } from '../data'
 import Reveal from './Reveal'
+
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const update = () => setIsDesktop(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+  return isDesktop
+}
 
 function Word({ children, progress, range }: { children: string; progress: any; range: [number, number] }) {
   const opacity = useTransform(progress, range, [0.15, 1])
@@ -13,7 +25,8 @@ function Word({ children, progress, range }: { children: string; progress: any; 
 }
 
 export default function About() {
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLParagraphElement>(null)
+  const isDesktop = useIsDesktop()
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start 0.85', 'start 0.25'],
@@ -30,20 +43,30 @@ export default function About() {
           </span>
         </Reveal>
 
-        <p
-          ref={ref}
-          className="mt-8 text-3xl md:text-5xl leading-[1.25] font-medium tracking-tight flex flex-wrap"
-        >
-          {words.map((w, i) => {
-            const start = i / words.length
-            const end = start + 1 / words.length
-            return (
-              <Word key={i} progress={scrollYProgress} range={[start, end]}>
-                {w}
-              </Word>
-            )
-          })}
-        </p>
+        {isDesktop ? (
+          // Desktop: scroll-linked word-by-word reveal
+          <p
+            ref={ref}
+            className="mt-8 text-3xl md:text-5xl leading-[1.25] font-medium tracking-tight flex flex-wrap"
+          >
+            {words.map((w, i) => {
+              const start = i / words.length
+              const end = start + 1 / words.length
+              return (
+                <Word key={i} progress={scrollYProgress} range={[start, end]}>
+                  {w}
+                </Word>
+              )
+            })}
+          </p>
+        ) : (
+          // Mobile: lightweight single fade — no per-word scroll listeners
+          <Reveal>
+            <p className="mt-8 text-2xl leading-[1.35] font-medium tracking-tight">
+              {profile.summary}
+            </p>
+          </Reveal>
+        )}
 
         <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((s, i) => (
