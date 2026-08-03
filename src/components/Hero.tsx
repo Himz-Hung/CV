@@ -35,18 +35,17 @@ export default function Hero() {
       ref={ref}
       id="top"
       onMouseMove={onMouse}
-      className="relative h-screen flex items-center justify-center overflow-hidden"
+      className="relative h-[100svh] min-h-[560px] flex items-center justify-center overflow-hidden"
     >
       {/* animated background orbs */}
       <motion.div
         style={{ x: orb1X, y: orb1Y }}
-        className="absolute -top-40 -left-20 w-[500px] h-[500px] rounded-full bg-indigo-600/30 blur-[120px] animate-float"
+        className="absolute -top-40 -left-20 w-[420px] h-[420px] rounded-full bg-indigo-600/30 blur-[90px] md:blur-[120px] animate-float"
       />
       <motion.div
         style={{ x: orb2X, y: orb2Y }}
-        className="absolute -bottom-40 -right-10 w-[600px] h-[600px] rounded-full bg-fuchsia-600/25 blur-[130px] animate-float"
+        className="absolute -bottom-40 -right-10 w-[500px] h-[500px] rounded-full bg-fuchsia-600/25 blur-[90px] md:blur-[130px] animate-float"
       />
-      <div className="absolute top-1/3 left-1/2 w-[400px] h-[400px] -translate-x-1/2 rounded-full bg-orange-500/10 blur-[120px]" />
 
       {/* grid overlay */}
       <div

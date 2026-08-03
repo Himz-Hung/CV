@@ -23,7 +23,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
       >
         {/* accent glow */}
         <div
-          className={`absolute -top-32 -right-24 w-96 h-96 rounded-full blur-[120px] opacity-40 bg-gradient-to-br ${project.accent}`}
+          className={`absolute -top-32 -right-24 w-72 md:w-96 h-72 md:h-96 rounded-full blur-[80px] md:blur-[120px] opacity-40 bg-gradient-to-br ${project.accent}`}
         />
         <div className="relative z-10">
           <div className="flex items-center justify-between flex-wrap gap-4">

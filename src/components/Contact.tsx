@@ -11,7 +11,7 @@ const items = [
 export default function Contact() {
   return (
     <section id="contact" className="relative py-40 px-6 overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-fuchsia-600/20 blur-[150px]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] md:w-[700px] h-[420px] md:h-[700px] rounded-full bg-fuchsia-600/20 blur-[100px] md:blur-[150px]" />
 
       <div className="relative max-w-4xl mx-auto text-center">
         <Reveal>
