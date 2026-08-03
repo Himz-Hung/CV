@@ -16,7 +16,9 @@ export default function About() {
   const ref = useRef<HTMLParagraphElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ['start 0.85', 'start 0.25'],
+    // spread the reveal across the paragraph's full height so the last
+    // words light up while still on-screen (fixes mobile tall paragraphs)
+    offset: ['start 0.85', 'end 0.6'],
   })
 
   const words = profile.summary.split(' ')
