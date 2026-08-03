@@ -13,7 +13,7 @@ export const profile = {
 }
 
 export const stats = [
-  { value: '3+', label: 'Năm kinh nghiệm' },
+  { value: '~3', label: 'Năm kinh nghiệm' },
   { value: '30+', label: 'React components tái sử dụng' },
   { value: '20+', label: 'REST API endpoints tích hợp' },
   { value: '8.09', label: 'GPA / 10 (FPT University)' },
