@@ -1,9 +1,33 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion'
 import { profile } from '../data'
 
-export default function Hero() {
+export default function Hero({ start = true }: { start?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
+
+  // typewriter effect — reveals the name one character at a time, like someone
+  // typing it out, with a slightly irregular human cadence. Kicks off once the
+  // preloader is gone; the glitch takes over after the full name is typed.
+  const fullName = profile.name
+  const [typed, setTyped] = useState('')
+  const [typingDone, setTypingDone] = useState(false)
+
+  useEffect(() => {
+    if (!start) return
+    let i = 0
+    let timer = 0
+    const step = () => {
+      i += 1
+      setTyped(fullName.slice(0, i))
+      if (i >= fullName.length) {
+        setTypingDone(true)
+        return
+      }
+      timer = window.setTimeout(step, 70 + Math.random() * 90)
+    }
+    timer = window.setTimeout(step, 300)
+    return () => window.clearTimeout(timer)
+  }, [start, fullName])
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
@@ -71,18 +95,26 @@ export default function Hero() {
           {profile.tagline}
         </motion.p>
 
-        <h1 className="text-[14vw] md:text-[8.5rem] leading-[1.12] font-semibold tracking-tight py-[0.15em]">
-          {profile.name.split(' ').map((word, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, y: 60, filter: 'blur(12px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ delay: 0.3 + i * 0.12, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-              className="inline-block mr-[0.25em] pb-[0.12em] gradient-text animate-shimmer"
-            >
-              {word}
-            </motion.span>
-          ))}
+        <h1
+          aria-label={fullName}
+          className="grid justify-center text-[clamp(1.75rem,10vw,8.5rem)] leading-[1.12] font-semibold tracking-tight py-[0.15em] min-h-[1.3em]"
+        >
+          {/* invisible sizer — reserves the final name's box so the typed text
+              never shifts the layout width. Font clamps down to stay on one line. */}
+          <span aria-hidden className="[grid-area:1/1] invisible whitespace-nowrap pb-[0.12em]">
+            {fullName}
+          </span>
+          {/* live text — left-aligned inside the reserved box */}
+          <span
+            aria-hidden
+            data-text={typed}
+            className={`[grid-area:1/1] w-full whitespace-nowrap text-left gradient-text animate-shimmer pb-[0.12em] ${
+              typingDone ? 'glitch' : ''
+            }`}
+          >
+            {typed}
+            {!typingDone && <span aria-hidden className="caret" />}
+          </span>
         </h1>
 
         <motion.p

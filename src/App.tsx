@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import Nav from './components/Nav'
 import ScrollProgress from './components/ScrollProgress'
 import Preloader from './components/Preloader'
+import FloatingTech from './components/FloatingTech'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
 import About from './components/About'
@@ -31,8 +32,9 @@ export default function App() {
 
       <ScrollProgress />
       <Nav />
-      <main>
-        <Hero />
+      <FloatingTech />
+      <main className="relative z-10">
+        <Hero start={!loading} />
         <Marquee />
         <About />
         <Skills />

@@ -81,7 +81,7 @@ export default function Projects() {
           </span>
           <h2 className="mt-4 text-4xl md:text-6xl font-semibold tracking-tight">
             Những sản phẩm <br />
-            <span className="text-haze">tôi đã xây dựng.</span>
+            tôi đã xây dựng.
           </h2>
         </Reveal>
 

@@ -45,6 +45,88 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+/* Typewriter caret */
+.caret {
+  display: inline-block;
+  width: 0.07em;
+  min-width: 3px;
+  height: 0.82em;
+  vertical-align: -0.04em;
+  margin-left: 0.05em;
+  background: linear-gradient(180deg, #a5b4fc, #f0abfc);
+  border-radius: 2px;
+  animation: caret-blink 1.05s steps(1) infinite;
+}
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Authentic 8-bit slice glitch — hard stepped bands + RGB channel split.
+   Two colored copies of the text get clipped into horizontal slices that
+   jump in discrete steps, while the whole word does a tiny pixel jitter. */
+.glitch {
+  position: relative;
+  display: inline-block;
+  animation: glitch-jitter 2.4s steps(9) infinite;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  pointer-events: none;
+  -webkit-text-fill-color: currentColor;
+  mix-blend-mode: screen;
+  opacity: 0.9;
+}
+.glitch::before {
+  color: #00e5ff; /* cyan channel */
+  animation: glitch-slice-a 1.7s steps(10, end) infinite;
+}
+.glitch::after {
+  color: #ff2e97; /* magenta channel */
+  animation: glitch-slice-b 2.3s steps(11, end) infinite;
+}
+@keyframes glitch-slice-a {
+  0%   { clip-path: inset(0 0 88% 0);   transform: translate(-4px, -1px); }
+  15%  { clip-path: inset(18% 0 62% 0); transform: translate(4px, 0); }
+  30%  { clip-path: inset(45% 0 40% 0); transform: translate(-3px, 1px); }
+  45%  { clip-path: inset(70% 0 12% 0); transform: translate(3px, -1px); }
+  60%  { clip-path: inset(30% 0 55% 0); transform: translate(-5px, 0); }
+  75%  { clip-path: inset(8% 0 80% 0);  transform: translate(2px, 1px); }
+  90%  { clip-path: inset(60% 0 22% 0); transform: translate(-2px, -1px); }
+  100% { clip-path: inset(0 0 88% 0);   transform: translate(4px, 0); }
+}
+@keyframes glitch-slice-b {
+  0%   { clip-path: inset(80% 0 6% 0);  transform: translate(4px, 1px); }
+  16%  { clip-path: inset(52% 0 34% 0); transform: translate(-4px, 0); }
+  32%  { clip-path: inset(10% 0 78% 0); transform: translate(5px, -1px); }
+  48%  { clip-path: inset(38% 0 48% 0); transform: translate(-3px, 1px); }
+  64%  { clip-path: inset(66% 0 20% 0); transform: translate(3px, 0); }
+  80%  { clip-path: inset(22% 0 66% 0); transform: translate(-5px, 1px); }
+  100% { clip-path: inset(80% 0 6% 0);  transform: translate(4px, -1px); }
+}
+@keyframes glitch-jitter {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-1px, 0); }
+  25% { transform: translate(1px, -1px); }
+  40% { transform: translate(-1px, 1px); }
+  55% { transform: translate(1px, 0); }
+  70% { transform: translate(0, 1px); }
+  85% { transform: translate(-1px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glitch,
+  .glitch::before,
+  .glitch::after {
+    animation: none;
+  }
+  .glitch::before,
+  .glitch::after { opacity: 0; }
+}
+
 .glass {
   background: rgba(20, 20, 28, 0.55);
   backdrop-filter: blur(12px);

@@ -12,7 +12,7 @@ export default function Skills() {
           </span>
           <h2 className="mt-4 text-4xl md:text-6xl font-semibold tracking-tight">
             Công nghệ tôi dùng <br />
-            <span className="text-haze">để tạo ra sản phẩm.</span>
+            để tạo ra sản phẩm.
           </h2>
         </Reveal>
 
