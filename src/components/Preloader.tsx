@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Logo from './Logo'
+import { en } from '../i18n/en'
 
 export default function Preloader({ onDone }: { onDone: () => void }) {
   const [progress, setProgress] = useState(0)
+  // The preloader runs before the visitor picks a language, so it uses the site
+  // default (English).
+  const pre = en.preloader
 
   useEffect(() => {
     // remove the instant boot loader from index.html once React takes over
@@ -59,7 +63,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
         transition={{ delay: 0.3 }}
         className="relative mt-4 text-sm tracking-[0.3em] uppercase text-haze"
       >
-        Front-end Developer
+        {pre.role}
       </motion.p>
 
       {/* progress bar */}
@@ -71,7 +75,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
           />
         </div>
         <div className="mt-3 flex justify-between text-xs text-haze tabular-nums">
-          <span>Đang tải trải nghiệm…</span>
+          <span>{pre.loading}</span>
           <span>{progress}%</span>
         </div>
       </div>

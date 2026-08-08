@@ -1,7 +1,8 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { profile, stats } from '../data'
+import { useI18n } from '../i18n'
 import Reveal from './Reveal'
+import CountUp from './CountUp'
 
 function Word({ children, progress, range }: { children: string; progress: any; range: [number, number] }) {
   const opacity = useTransform(progress, range, [0.15, 1])
@@ -14,6 +15,8 @@ function Word({ children, progress, range }: { children: string; progress: any; 
 
 export default function About() {
   const ref = useRef<HTMLParagraphElement>(null)
+  const { t } = useI18n()
+  const { profile, stats } = t
   const { scrollYProgress } = useScroll({
     target: ref,
     // spread the reveal across the paragraph's full height so the last
@@ -28,7 +31,7 @@ export default function About() {
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <span className="text-sm tracking-[0.25em] uppercase text-fuchsia-400">
-            Về tôi
+            {t.about.eyebrow}
           </span>
         </Reveal>
 
@@ -52,7 +55,7 @@ export default function About() {
             <Reveal key={s.label} delay={i * 0.1} className="h-full">
               <div className="glass rounded-3xl p-6 h-full flex flex-col items-center justify-center text-center hover:-translate-y-2 transition-transform duration-500">
                 <div className="text-4xl md:text-5xl font-semibold gradient-text">
-                  {s.value}
+                  <CountUp value={s.value} />
                 </div>
                 <div className="mt-2 text-sm text-haze">{s.label}</div>
               </div>

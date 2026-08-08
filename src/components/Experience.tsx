@@ -1,10 +1,13 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { experience, education } from '../data'
+import { useI18n } from '../i18n'
 import Reveal from './Reveal'
 
 export default function Experience() {
   const ref = useRef<HTMLDivElement>(null)
+  const { t } = useI18n()
+  const experience = t.experience_data
+  const education = t.education
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start 0.7', 'end 0.7'],
@@ -16,10 +19,10 @@ export default function Experience() {
       <div className="max-w-4xl mx-auto">
         <Reveal>
           <span className="text-sm tracking-[0.25em] uppercase text-orange-400">
-            Hành trình
+            {t.experience.eyebrow}
           </span>
           <h2 className="mt-4 text-4xl md:text-6xl font-semibold tracking-tight">
-            Kinh nghiệm làm việc
+            {t.experience.heading}
           </h2>
         </Reveal>
 
@@ -54,7 +57,7 @@ export default function Experience() {
             <h3 className="text-2xl font-semibold">{education.degree}</h3>
             <div className="text-orange-300 mb-2">{education.school}</div>
             <div className="inline-block text-sm px-3 py-1 rounded-full glass">
-              GPA: {education.gpa}
+              {t.experience.gpaLabel}: {education.gpa}
             </div>
           </Reveal>
         </div>

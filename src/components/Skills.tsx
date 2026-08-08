@@ -1,18 +1,20 @@
 import { motion } from 'framer-motion'
-import { skills } from '../data'
+import { useI18n } from '../i18n'
 import Reveal from './Reveal'
 
 export default function Skills() {
+  const { t } = useI18n()
+  const skills = t.skills_data
   return (
     <section id="skills" className="relative py-32 px-6">
       <div className="max-w-6xl mx-auto">
         <Reveal>
           <span className="text-sm tracking-[0.25em] uppercase text-indigo-400">
-            Bộ kỹ năng
+            {t.skills.eyebrow}
           </span>
           <h2 className="mt-4 text-4xl md:text-6xl font-semibold tracking-tight">
-            Công nghệ tôi dùng <br />
-            để tạo ra sản phẩm.
+            {t.skills.headingLines[0]} <br />
+            {t.skills.headingLines[1]}
           </h2>
         </Reveal>
 

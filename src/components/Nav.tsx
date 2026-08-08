@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Logo from './Logo'
-
-const links = [
-  { id: 'about', label: 'Giới thiệu' },
-  { id: 'skills', label: 'Kỹ năng' },
-  { id: 'experience', label: 'Kinh nghiệm' },
-  { id: 'projects', label: 'Dự án' },
-  { id: 'contact', label: 'Liên hệ' },
-]
+import Magnetic from './Magnetic'
+import { useI18n } from '../i18n'
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
+  const { t, lang, setLang } = useI18n()
+
+  const links = [
+    { id: 'about', label: t.nav.about },
+    { id: 'skills', label: t.nav.skills },
+    { id: 'experience', label: t.nav.experience },
+    { id: 'projects', label: t.nav.projects },
+    { id: 'contact', label: t.nav.contact },
+  ]
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -43,12 +46,25 @@ export default function Nav() {
             </a>
           ))}
         </div>
-        <a
-          href="#contact"
-          className="text-sm font-medium px-4 py-2 rounded-full bg-white text-black hover:scale-105 active:scale-95 transition-transform duration-300"
-        >
-          Kết nối
-        </a>
+        <div className="flex items-center gap-3">
+          {/* language toggle */}
+          <button
+            type="button"
+            onClick={() => setLang(lang === 'vi' ? 'en' : 'vi')}
+            aria-label="Toggle language"
+            className="text-sm font-medium px-3 py-2 rounded-full border border-white/15 text-haze hover:text-white hover:border-white/40 transition-colors duration-300"
+          >
+            {lang === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}
+          </button>
+          <Magnetic>
+            <a
+              href="#contact"
+              className="inline-block text-sm font-medium px-4 py-2 rounded-full bg-white text-black hover:scale-105 active:scale-95 transition-transform duration-300"
+            >
+              {t.nav.connect}
+            </a>
+          </Magnetic>
+        </div>
       </div>
     </motion.nav>
   )

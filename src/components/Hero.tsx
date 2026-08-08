@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion'
-import { profile } from '../data'
+import { useI18n } from '../i18n'
 
 export default function Hero({ start = true }: { start?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
+  const { t } = useI18n()
+  const profile = t.profile
 
   // typewriter effect — reveals the name one character at a time, like someone
   // typing it out, with a slightly irregular human cadence. Kicks off once the
@@ -134,7 +136,7 @@ export default function Hero({ start = true }: { start?: boolean }) {
         transition={{ delay: 1.6 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-haze"
       >
-        <span className="text-xs tracking-widest uppercase">Cuộn xuống</span>
+        <span className="text-xs tracking-widest uppercase">{t.hero.scrollCue}</span>
         <div className="w-[24px] h-[38px] rounded-full border border-white/25 flex justify-center pt-2">
           <motion.div
             animate={{ y: [0, 12, 0] }}

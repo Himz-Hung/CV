@@ -1,9 +1,10 @@
 import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { projects } from '../data'
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion'
+import { useI18n } from '../i18n'
+import type { Project } from '../i18n/types'
 import Reveal from './Reveal'
 
-function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -13,12 +14,32 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
   const scale = useTransform(scrollYProgress, [0, 1], [0.85, 1])
   const opacity = useTransform(scrollYProgress, [0, 1], [0.65, 1])
 
+  // 3D tilt following the cursor across the card
+  const rotX = useMotionValue(0)
+  const rotY = useMotionValue(0)
+  const sRotX = useSpring(rotX, { stiffness: 150, damping: 15, mass: 0.4 })
+  const sRotY = useSpring(rotY, { stiffness: 150, damping: 15, mass: 0.4 })
+
+  const onTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    const px = (e.clientX - r.left) / r.width - 0.5
+    const py = (e.clientY - r.top) / r.height - 0.5
+    rotY.set(px * 8)
+    rotX.set(-py * 8)
+  }
+  const resetTilt = () => {
+    rotX.set(0)
+    rotY.set(0)
+  }
+
   const topOffset = 90 + index * 24
 
   return (
     <div ref={ref} className="static md:sticky" style={{ top: `${topOffset}px` }}>
       <motion.div
-        style={{ scale, opacity }}
+        onMouseMove={onTilt}
+        onMouseLeave={resetTilt}
+        style={{ scale, opacity, rotateX: sRotX, rotateY: sRotY, transformPerspective: 1200 }}
         className="relative rounded-[2rem] overflow-hidden bg-[#0c0c13] border border-white/10 shadow-2xl shadow-black/60 p-6 md:p-14 md:min-h-[60vh] flex flex-col justify-between"
       >
         {/* accent glow */}
@@ -72,16 +93,18 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
 }
 
 export default function Projects() {
+  const { t } = useI18n()
+  const projects = t.projects_data
   return (
     <section id="projects" className="relative py-32 px-6">
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <span className="text-sm tracking-[0.25em] uppercase text-emerald-400">
-            Tuyển tập dự án
+            {t.projects.eyebrow}
           </span>
           <h2 className="mt-4 text-4xl md:text-6xl font-semibold tracking-tight">
-            Những sản phẩm <br />
-            tôi đã xây dựng.
+            {t.projects.headingLines[0]} <br />
+            {t.projects.headingLines[1]}
           </h2>
         </Reveal>
 
