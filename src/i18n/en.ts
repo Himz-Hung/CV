@@ -76,6 +76,7 @@ export const en: Translation = {
   preloader: {
     role: 'Front-end Developer',
     loading: 'Loading the experience…',
+    preparing: 'Preparing the experience…',
   },
   welcome: {
     greeting: 'Hello 👋',

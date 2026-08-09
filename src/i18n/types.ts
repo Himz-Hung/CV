@@ -92,6 +92,7 @@ export type Translation = {
   preloader: {
     role: string
     loading: string
+    preparing: string
   }
   welcome: {
     greeting: string

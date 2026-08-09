@@ -76,6 +76,7 @@ export const vi: Translation = {
   preloader: {
     role: 'Front-end Developer',
     loading: 'Đang tải trải nghiệm…',
+    preparing: 'Đang chuẩn bị trải nghiệm…',
   },
   welcome: {
     greeting: 'Xin chào 👋',

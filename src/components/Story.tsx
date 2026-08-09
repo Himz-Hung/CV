@@ -128,10 +128,15 @@ function makeGlyph(n: number, glyph: string): Shape {
   return out
 }
 
-export default function Story() {
+export default function Story({ onReady }: { onReady?: () => void } = {}) {
   const { t } = useI18n()
   const chapters = t.story.chapters
   const NC = chapters.length
+
+  // Keep the latest onReady in a ref so firing it doesn't force the heavy setup
+  // effect (keyed on NC) to re-run when the parent passes a new callback.
+  const onReadyRef = useRef(onReady)
+  onReadyRef.current = onReady
 
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -239,6 +244,7 @@ export default function Story() {
 
     let raf = 0
     let visible = true
+    let notified = false
     let idle = 0
     let lastActive = -1
     const cIndigo = [129, 140, 248]
@@ -346,6 +352,13 @@ export default function Story() {
         const on = i === activeIdx
         d.style.width = on ? '28px' : '14px'
         d.style.backgroundColor = on ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.18)'
+      }
+
+      // The cloud has now painted at least once — tell the parent it's safe to
+      // lift the "preparing" screen and reveal the page.
+      if (!notified) {
+        notified = true
+        onReadyRef.current?.()
       }
 
       raf = requestAnimationFrame(frame)
