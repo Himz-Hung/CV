@@ -54,6 +54,7 @@ export default function App() {
   //  - entered: flipped once Story has painted its first frame (or a safety
   //    timeout), which fades the EnterLoader out.
   const [mountCV, setMountCV] = useState(false)
+  const [storyReady, setStoryReady] = useState(false)
   const [entered, setEntered] = useState(false)
 
   const showWelcome = !loading && lang === null
@@ -76,14 +77,6 @@ export default function App() {
       cancelAnimationFrame(r2)
     }
   }, [lang])
-
-  // Safety net: never let the EnterLoader hang if Story's onReady somehow never
-  // fires (e.g. reduced-motion or a stalled frame).
-  useEffect(() => {
-    if (!mountCV || entered) return
-    const id = window.setTimeout(() => setEntered(true), 4000)
-    return () => window.clearTimeout(id)
-  }, [mountCV, entered])
 
   // lock scroll while any gate (preloader / welcome / enter-loader) is visible
   useEffect(() => {
@@ -109,9 +102,13 @@ export default function App() {
 
       {lang && (
         <I18nProvider key={lang} initialLang={lang}>
-          {mountCV && <CV onReady={() => setEntered(true)} />}
+          {mountCV && <CV onReady={() => setStoryReady(true)} />}
           {mountCV && <ScrollToTop />}
-          <AnimatePresence>{!entered && <EnterLoader />}</AnimatePresence>
+          <AnimatePresence>
+            {!entered && (
+              <EnterLoader ready={storyReady} onDone={() => setEntered(true)} />
+            )}
+          </AnimatePresence>
         </I18nProvider>
       )}
     </>

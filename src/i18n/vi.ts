@@ -17,7 +17,7 @@ export const vi: Translation = {
     chapters: [
       {
         eyebrow: 'Front-end Developer',
-        title: 'Đặng Ngọc Hùng',
+        title: 'Đặng Ngọc Hưng',
         body: 'Tôi tạo ra những giao diện web nhanh và tinh tế bằng React & TypeScript. Cuộn xuống để theo dõi câu chuyện — từ dòng code đầu tiên đến những sản phẩm tôi làm ra.',
       },
       {

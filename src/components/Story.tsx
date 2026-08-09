@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useI18n } from '../i18n'
 
 /**
@@ -138,28 +138,18 @@ export default function Story({ onReady }: { onReady?: () => void } = {}) {
   const onReadyRef = useRef(onReady)
   onReadyRef.current = onReady
 
+  // Latest chapters, read imperatively by the typewriter without adding a dep to
+  // the heavy canvas effect (the whole subtree remounts on language change).
+  const chaptersRef = useRef(chapters)
+  chaptersRef.current = chapters
+
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const panelRefs = useRef<(HTMLDivElement | null)[]>([])
   const dotRefs = useRef<(HTMLSpanElement | null)[]>([])
-
-  // Which chapter is centred right now, and the typewriter state for its title.
-  const [active, setActive] = useState(0)
-  const [typed, setTyped] = useState('')
-
-  // Type the active chapter's title out, character by character, each time the
-  // chapter changes (and on first mount).
-  useEffect(() => {
-    const full = chapters[active]?.title ?? ''
-    setTyped('')
-    let i = 0
-    let timer = window.setTimeout(function step() {
-      i += 1
-      setTyped(full.slice(0, i))
-      if (i < full.length) timer = window.setTimeout(step, 30 + Math.random() * 45)
-    }, 140)
-    return () => window.clearTimeout(timer)
-  }, [active, chapters])
+  // Title text spans + their carets, driven imperatively (see note below).
+  const titleRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const caretRefs = useRef<(HTMLSpanElement | null)[]>([])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -241,6 +231,42 @@ export default function Story({ onReady }: { onReady?: () => void } = {}) {
     window.addEventListener('scroll', readProgress, { passive: true })
     window.addEventListener('resize', onResize)
     window.addEventListener('orientationchange', onResize)
+
+    // --- imperative typewriter -------------------------------------------------
+    // The title used to be typed via React state (setTyped per character), which
+    // re-rendered the whole section on every keystroke and stuttered against the
+    // canvas loop + entry reveal. We now write straight into the text node of the
+    // active chapter's title span — zero React re-renders — and toggle its caret.
+    let typeTimer = 0
+    const startTyping = (idx: number, initialDelay: number) => {
+      window.clearTimeout(typeTimer)
+      const chs = chaptersRef.current
+      // every non-active title shows its full text (no caret)
+      for (let k = 0; k < titleRefs.current.length; k++) {
+        if (k === idx) continue
+        const el = titleRefs.current[k]
+        if (el?.firstChild) el.firstChild.nodeValue = chs[k]?.title ?? ''
+        const c = caretRefs.current[k]
+        if (c) c.style.display = 'none'
+      }
+      const titleEl = titleRefs.current[idx]
+      const caretEl = caretRefs.current[idx]
+      const full = chs[idx]?.title ?? ''
+      if (!titleEl?.firstChild) return
+      titleEl.firstChild.nodeValue = ''
+      if (caretEl) caretEl.style.display = ''
+      let i = 0
+      const step = () => {
+        i += 1
+        titleEl.firstChild!.nodeValue = full.slice(0, i)
+        if (i < full.length) {
+          typeTimer = window.setTimeout(step, 30 + Math.random() * 45)
+        } else if (caretEl) {
+          caretEl.style.display = 'none'
+        }
+      }
+      typeTimer = window.setTimeout(step, initialDelay)
+    }
 
     let raf = 0
     let visible = true
@@ -342,8 +368,12 @@ export default function Story({ onReady }: { onReady?: () => void } = {}) {
       // --- light up the progress rail for the active chapter -----------------
       const activeIdx = Math.round(progress * (NC - 1))
       if (activeIdx !== lastActive) {
+        // First activation waits out the entry reveal (EnterLoader fade ~0.6s)
+        // so the name doesn't type during the busiest moment; later changes are
+        // snappy. Runs imperatively — no re-render.
+        const first = lastActive === -1
         lastActive = activeIdx
-        setActive(activeIdx) // triggers the title typewriter (rare — on change only)
+        startTyping(activeIdx, first ? 700 : 140)
       }
       const dots = dotRefs.current
       for (let i = 0; i < dots.length; i++) {
@@ -377,6 +407,7 @@ export default function Story({ onReady }: { onReady?: () => void } = {}) {
 
     return () => {
       cancelAnimationFrame(raf)
+      window.clearTimeout(typeTimer)
       ro.disconnect()
       io.disconnect()
       mq.removeEventListener('change', onMq)
@@ -417,16 +448,28 @@ export default function Story({ onReady }: { onReady?: () => void } = {}) {
                 {ch.eyebrow}
               </p>
               {/* title as a typewriter for the active chapter; an invisible
-                  sizer reserves the full box so the layout never jumps */}
+                  sizer reserves the full box so the layout never jumps. The
+                  visible text node is driven imperatively (no React re-render
+                  per character) — see startTyping in the effect above. */}
               <h2 className="grid text-[clamp(2rem,5.5vw,4.5rem)] font-semibold leading-[1.05] tracking-tight">
                 <span aria-hidden className="[grid-area:1/1] invisible">
                   {ch.title}
                 </span>
-                <span className="gradient-text animate-shimmer [grid-area:1/1]">
-                  {i === active ? typed : ch.title}
-                  {i === active && typed.length < ch.title.length && (
-                    <span aria-hidden className="caret" />
-                  )}
+                <span
+                  ref={(el) => {
+                    titleRefs.current[i] = el
+                  }}
+                  className="gradient-text animate-shimmer [grid-area:1/1]"
+                >
+                  {ch.title}
+                  <span
+                    ref={(el) => {
+                      caretRefs.current[i] = el
+                    }}
+                    aria-hidden
+                    className="caret"
+                    style={{ display: 'none' }}
+                  />
                 </span>
               </h2>
               <p className="mt-6 max-w-xl text-base md:text-lg leading-relaxed text-white/70">
