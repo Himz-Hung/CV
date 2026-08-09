@@ -445,7 +445,10 @@ export default function Story() {
         {Array.from({ length: NC - 1 }).map((_, i) => (
           <div key={i} className="h-[100dvh] snap-start" />
         ))}
-        <div className="h-[60dvh]" />
+        {/* Trailing dwell for the last chapter (@). Kept short on mobile — a full
+            60dvh of pinned, no-op scroll there felt like a dead zone you had to
+            fight through before the pin released. */}
+        <div className="h-[24dvh] md:h-[60dvh]" />
       </div>
     </section>
   )

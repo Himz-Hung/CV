@@ -13,23 +13,51 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
     // remove the instant boot loader from index.html once React takes over
     document.getElementById('boot')?.remove()
 
-    const duration = 1500
+    // MIN keeps the animation feeling intentional; the bar eases to ~90% over
+    // this window. It only completes once the page is ACTUALLY ready (all
+    // images/fonts/the bundle finished) so we don't drop the visitor — on a
+    // slow phone especially — onto a page the browser is still busy painting.
+    // MAX is a hard cap so a slow or broken asset can never trap them here.
+    const MIN = 1500
+    const MAX = 6000
     const startAt = performance.now()
     let raf = 0
+    let done = false
+
+    let loaded = document.readyState === 'complete'
+    const onLoad = () => {
+      loaded = true
+    }
+    if (!loaded) window.addEventListener('load', onLoad, { once: true })
+
+    const finish = () => {
+      if (done) return
+      done = true
+      setProgress(100)
+      setTimeout(onDone, 250)
+    }
 
     const tick = (now: number) => {
-      const t = Math.min((now - startAt) / duration, 1)
+      const elapsed = now - startAt
+      const t = Math.min(elapsed / MIN, 1)
       // easeOutCubic
       const eased = 1 - Math.pow(1 - t, 3)
-      setProgress(Math.round(eased * 100))
-      if (t < 1) {
-        raf = requestAnimationFrame(tick)
-      } else {
-        setTimeout(onDone, 250)
+      // hold at 90% until the page is genuinely ready
+      const capped = loaded ? eased : Math.min(eased, 0.9)
+      setProgress(Math.round(capped * 100))
+
+      if ((elapsed >= MIN && loaded) || elapsed >= MAX) {
+        finish()
+        return
       }
+      raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('load', onLoad)
+    }
   }, [onDone])
 
   return (
