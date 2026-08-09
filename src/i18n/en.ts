@@ -13,6 +13,40 @@ export const en: Translation = {
   hero: {
     scrollCue: 'Scroll down',
   },
+  story: {
+    chapters: [
+      {
+        eyebrow: 'Front-end Developer',
+        title: 'Dang Ngoc Hung',
+        body: 'I craft fast, elegant web interfaces with React & TypeScript. Scroll to follow the story — from the first line of code to the products I ship.',
+      },
+      {
+        eyebrow: 'About me',
+        title: 'Turning ideas into interfaces',
+        body: 'Around 3 years building enterprise and client-facing web apps — reusable component systems, clean state management, and interfaces that feel effortless.',
+      },
+      {
+        eyebrow: 'Toolkit',
+        title: 'React · TypeScript · UI Engineering',
+        body: 'ReactJS, TypeScript, Redux Toolkit & React Query, Tailwind and MUI — plus the architecture habits that keep products fast as they grow.',
+      },
+      {
+        eyebrow: 'The journey',
+        title: 'From FPT Software to freelance',
+        body: 'Shipped enterprise features for overseas clients at FPT Software, then went freelance — delivering event platforms, management systems, and more end to end.',
+      },
+      {
+        eyebrow: 'Selected work',
+        title: 'Products I have shipped',
+        body: 'Freelance projects delivered end to end: a Lucky Wheel event platform, an Excel processing system, and a document management system — from UI to API integration.',
+      },
+      {
+        eyebrow: "Let's work together",
+        title: "Let's build something great.",
+        body: 'Have an idea, a project, or just want to say hello? Let’s talk.',
+      },
+    ],
+  },
   about: {
     eyebrow: 'About me',
   },

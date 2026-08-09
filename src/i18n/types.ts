@@ -58,6 +58,11 @@ export type Translation = {
   hero: {
     scrollCue: string
   }
+  story: {
+    // The scroll-driven storytelling section. Each chapter is one "scene" the
+    // point-cloud visual morphs into as the visitor scrolls.
+    chapters: { eyebrow: string; title: string; body: string }[]
+  }
   about: {
     eyebrow: string
   }

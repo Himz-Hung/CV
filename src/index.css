@@ -13,6 +13,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Gentle snapping: only engages near the story's snap points; the rest of
+     the page (About, Skills, …) has none, so normal scrolling is untouched. */
+  scroll-snap-type: y proximity;
 }
 
 body {

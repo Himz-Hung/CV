@@ -13,6 +13,40 @@ export const vi: Translation = {
   hero: {
     scrollCue: 'Cuộn xuống',
   },
+  story: {
+    chapters: [
+      {
+        eyebrow: 'Front-end Developer',
+        title: 'Đặng Ngọc Hùng',
+        body: 'Tôi tạo ra những giao diện web nhanh và tinh tế bằng React & TypeScript. Cuộn xuống để theo dõi câu chuyện — từ dòng code đầu tiên đến những sản phẩm tôi làm ra.',
+      },
+      {
+        eyebrow: 'Về tôi',
+        title: 'Biến ý tưởng thành giao diện',
+        body: 'Gần 3 năm xây dựng các ứng dụng web cho doanh nghiệp và khách hàng — hệ thống component tái sử dụng, quản lý state gọn gàng, và giao diện mượt mà, tự nhiên.',
+      },
+      {
+        eyebrow: 'Bộ công cụ',
+        title: 'React · TypeScript · UI Engineering',
+        body: 'ReactJS, TypeScript, Redux Toolkit & React Query, Tailwind và MUI — cùng tư duy kiến trúc giúp sản phẩm luôn nhanh khi mở rộng.',
+      },
+      {
+        eyebrow: 'Hành trình',
+        title: 'Từ FPT Software đến freelance',
+        body: 'Phát triển tính năng cho khách hàng nước ngoài tại FPT Software, rồi chuyển sang freelance — làm trọn gói các nền tảng sự kiện, hệ thống quản lý và hơn thế nữa.',
+      },
+      {
+        eyebrow: 'Dự án tiêu biểu',
+        title: 'Những dự án tôi đã làm',
+        body: 'Các dự án freelance tôi làm trọn gói: nền tảng sự kiện Vòng quay may mắn, hệ thống xử lý Excel và hệ thống quản lý tài liệu — từ giao diện đến tích hợp API.',
+      },
+      {
+        eyebrow: 'Cùng hợp tác nhé',
+        title: 'Cùng tạo nên điều tuyệt vời.',
+        body: 'Bạn có ý tưởng, một dự án, hay chỉ muốn chào hỏi? Hãy trò chuyện với tôi nhé.',
+      },
+    ],
+  },
   about: {
     eyebrow: 'Về tôi',
   },

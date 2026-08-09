@@ -5,7 +5,7 @@ import ScrollProgress from './components/ScrollProgress'
 import Preloader from './components/Preloader'
 import Welcome from './components/Welcome'
 import FloatingTech from './components/FloatingTech'
-import Hero from './components/Hero'
+import Story from './components/Story'
 import Marquee from './components/Marquee'
 import About from './components/About'
 import Skills from './components/Skills'
@@ -19,7 +19,7 @@ import { I18nProvider, useI18n, type Lang } from './i18n'
 
 // The CV itself — lives inside the I18nProvider so every section reads its text
 // from the currently selected language.
-function CV({ start }: { start: boolean }) {
+function CV() {
   const { t } = useI18n()
   return (
     <>
@@ -27,7 +27,7 @@ function CV({ start }: { start: boolean }) {
       <Nav />
       <FloatingTech />
       <main className="relative z-10">
-        <Hero start={start} />
+        <Story />
         <Marquee />
         <About />
         <Skills />
@@ -79,7 +79,7 @@ export default function App() {
 
       {lang && (
         <I18nProvider key={lang} initialLang={lang}>
-          <CV start={!loading} />
+          <CV />
           <ScrollToTop />
         </I18nProvider>
       )}
