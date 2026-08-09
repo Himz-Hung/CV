@@ -16,7 +16,7 @@ import { useI18n } from '../i18n'
  */
 
 const POINTS_DESKTOP = 4200
-const POINTS_MOBILE = 1300
+const POINTS_MOBILE = 850
 
 // ---- shape generators -------------------------------------------------------
 // Every generator returns a Float32Array of length n*3 (x,y,z), roughly bounded
@@ -171,6 +171,7 @@ export default function Story() {
     let desktop = mq.matches
     const onMq = () => {
       desktop = mq.matches
+      resize()
     }
     mq.addEventListener('change', onMq)
 
@@ -192,10 +193,13 @@ export default function Story() {
     // sizing (device-pixel-ratio aware, matches the canvas's own box)
     let W = 0
     let H = 0
-    let dpr = Math.min(window.devicePixelRatio || 1, 2)
+    // Cap the pixel ratio lower on phones: the cloud is drawn with additive
+    // ('lighter') compositing every frame, and fill-rate — not point count — is
+    // what stutters on mobile GPUs. 1.5 keeps it crisp while roughly halving work.
+    let dpr = Math.min(window.devicePixelRatio || 1, desktop ? 2 : 1.5)
     const resize = () => {
       const rect = canvas.getBoundingClientRect()
-      dpr = Math.min(window.devicePixelRatio || 1, 2)
+      dpr = Math.min(window.devicePixelRatio || 1, desktop ? 2 : 1.5)
       W = rect.width
       H = rect.height
       canvas.width = Math.max(1, Math.floor(W * dpr))
@@ -211,23 +215,43 @@ export default function Story() {
     // the final chapter "dwell" through the trailing spacer instead of being
     // centred only at the very last pixel (which caused the end-of-scroll gap).
     let progress = 0
+    // Cache the viewport height and refresh it only on resize/orientation —
+    // NOT on every scroll tick. On mobile the address bar collapses as you
+    // scroll, which changes window.innerHeight mid-gesture; reading it live made
+    // `scrolled / vh` jump and the whole cloud stutter. A cached value keeps the
+    // scroll→progress mapping smooth through the bar animation.
+    let vh = window.innerHeight
     const readProgress = () => {
       const rect = wrap.getBoundingClientRect()
-      const vh = window.innerHeight
       const scrolled = clamp(-rect.top, 0, rect.height - vh)
       const chapterFloat = clamp(scrolled / vh, 0, NC - 1)
       progress = NC === 1 ? 0 : chapterFloat / (NC - 1)
     }
     readProgress()
+    const onResize = () => {
+      vh = window.innerHeight
+      resize()
+      readProgress()
+    }
     window.addEventListener('scroll', readProgress, { passive: true })
+    window.addEventListener('resize', onResize)
+    window.addEventListener('orientationchange', onResize)
 
     let raf = 0
+    let visible = true
     let idle = 0
     let lastActive = -1
     const cIndigo = [129, 140, 248]
     const cFuchsia = [240, 171, 252]
 
     const frame = () => {
+      // Bail if the section has scrolled out of view — no reason to keep
+      // repainting a cloud nobody can see (saves battery and frees the main
+      // thread for the rest of the page's scrolling).
+      if (!visible) {
+        raf = 0
+        return
+      }
       idle += reduced ? 0 : 1
 
       // --- build the morph target from the two neighbouring chapter shapes ---
@@ -328,27 +352,41 @@ export default function Story() {
     }
     raf = requestAnimationFrame(frame)
 
+    // Pause/resume the render loop as the section enters and leaves the viewport.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting
+        if (visible && !raf) raf = requestAnimationFrame(frame)
+      },
+      { threshold: 0 },
+    )
+    io.observe(wrap)
+
     return () => {
       cancelAnimationFrame(raf)
       ro.disconnect()
+      io.disconnect()
       mq.removeEventListener('change', onMq)
       window.removeEventListener('scroll', readProgress)
+      window.removeEventListener('resize', onResize)
+      window.removeEventListener('orientationchange', onResize)
     }
   }, [NC])
 
   return (
     <section id="top" ref={wrapRef} className="relative">
-      <div className="sticky top-0 z-10 h-[100svh] overflow-hidden">
-        {/* soft ambient glow behind the cloud */}
+      <div className="sticky top-0 z-10 h-[100dvh] overflow-hidden">
+        {/* soft ambient glow behind the cloud — lighter blur on phones, where
+            huge blur radii are the single most expensive thing to composite */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-[12%] top-1/2 -translate-y-1/2 h-[70vmin] w-[70vmin] rounded-full bg-indigo-600/20 blur-[120px]" />
-          <div className="absolute left-[24%] top-1/3 h-[40vmin] w-[40vmin] rounded-full bg-fuchsia-600/15 blur-[110px]" />
+          <div className="absolute left-[12%] top-1/2 -translate-y-1/2 h-[70vmin] w-[70vmin] rounded-full bg-indigo-600/20 blur-[70px] md:blur-[120px]" />
+          <div className="absolute left-[24%] top-1/3 h-[40vmin] w-[40vmin] rounded-full bg-fuchsia-600/15 blur-[60px] md:blur-[110px]" />
         </div>
 
         {/* the point cloud — top strip on mobile, left half on desktop */}
         <canvas
           ref={canvasRef}
-          className="absolute left-0 right-0 top-0 h-[42svh] w-full md:inset-y-0 md:right-auto md:h-full md:w-1/2"
+          className="absolute left-0 right-0 top-0 h-[42dvh] w-full md:inset-y-0 md:right-auto md:h-full md:w-1/2"
         />
 
         {/* stacked story panels — lower-centre on mobile, right half on desktop */}
@@ -405,9 +443,9 @@ export default function Story() {
           before the pin releases (no more end-of-scroll gap). */}
       <div aria-hidden>
         {Array.from({ length: NC - 1 }).map((_, i) => (
-          <div key={i} className="h-[100svh] snap-start" />
+          <div key={i} className="h-[100dvh] snap-start" />
         ))}
-        <div className="h-[60svh]" />
+        <div className="h-[60dvh]" />
       </div>
     </section>
   )
