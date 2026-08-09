@@ -499,7 +499,10 @@ export default function Story({ onReady }: { onReady?: () => void } = {}) {
           before the pin releases (no more end-of-scroll gap). */}
       <div aria-hidden>
         {Array.from({ length: NC - 1 }).map((_, i) => (
-          <div key={i} className="h-[100dvh] snap-start" />
+          // Snap every chapter into place EXCEPT the last (@): a proximity snap
+          // there kept pulling light mobile swipes back onto it, trapping the
+          // user, so the final spacer is left un-snapped to scroll out freely.
+          <div key={i} className={`h-[100dvh]${i < NC - 2 ? ' snap-start' : ''}`} />
         ))}
         {/* Trailing dwell for the last chapter (@). Kept short on mobile — a full
             60dvh of pinned, no-op scroll there felt like a dead zone you had to
